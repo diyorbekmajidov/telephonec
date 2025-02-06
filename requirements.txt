@@ -2,5 +2,5 @@ django
 djangorestframework
 django-cors-headers
 Pillow
-django-ckeditor-5
+django-ckeditor
 requests
