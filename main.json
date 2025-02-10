@@ -1,0 +1,80 @@
+[{
+    "id": 109,
+    "name": "Bulung‘ur tumani",
+    "region_id": 8
+  },
+  {
+    "id": 110,
+    "name": "Jomboy tumani",
+    "region_id": 8
+  },
+  {
+    "id": 111,
+    "name": "Ishtixon tumani",
+    "region_id": 8
+  },
+  {
+    "id": 112,
+    "name": "Kattaqo‘rg‘on tumani",
+    "region_id": 8
+  },
+  {
+    "id": 113,
+    "name": "Kattaqo‘rg‘on shahri",
+    "region_id": 8
+  },
+  {
+    "id": 114,
+    "name": "Qo‘shrabot tumani",
+    "region_id": 8
+  },
+  {
+    "id": 115,
+    "name": "Narpay tumani",
+    "region_id": 8
+  },
+  {
+    "id": 116,
+    "name": "Nurabod tumani",
+    "region_id": 8
+  },
+  {
+    "id": 117,
+    "name": "Oqdaryo tumani",
+    "region_id": 8
+  },
+  {
+    "id": 118,
+    "name": "Payariq tumani",
+    "region_id": 8
+  },
+  {
+    "id": 119,
+    "name": "Pastarg‘om tumani",
+    "region_id": 8
+  },
+  {
+    "id": 120,
+    "name": "Paxtachi tumani",
+    "region_id": 8
+  },
+  {
+    "id": 121,
+    "name": "Samarqand tumani",
+    "region_id": 8
+  },
+  {
+    "id": 122,
+    "name": "Samarqand shahri",
+    "region_id": 8
+  },
+  {
+    "id": 123,
+    "name": "Toyloq tumani",
+    "region_id": 8
+  },
+  {
+    "id": 124,
+    "name": "Urgut tumani",
+    "region_id": 8
+  }]

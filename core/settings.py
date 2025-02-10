@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'telephonec', #my app
+    'contacts', #my app
     'rest_framework',
     'ckeditor', # this for django-ckeditor
 ]
