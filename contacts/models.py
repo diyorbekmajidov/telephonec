@@ -14,7 +14,7 @@ def get_district():
     return [(str(i['id']) ,i["name"]) for i in data]
 
 class Role(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True) #city staff or district staff
 
     def __str__(self):
         return self.name
