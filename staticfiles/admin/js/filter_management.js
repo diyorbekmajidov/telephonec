@@ -1,7 +1,5 @@
 (function($) {
     $(document).ready(function() {
-        console.log("JS ishladi!");
-
         function filterManagement() {
             var statusField = $("#id_status");
             var managementField = $("#id_management");
@@ -9,33 +7,36 @@
             if (!statusField.length || !managementField.length) return;
 
             var statusValue = statusField.val();
-            console.log("Status tanlandi:", statusValue);
-
-            // Barcha variantlarni yashirish
             managementField.find("option").hide();
 
             if (statusValue === "2") {
-                // Agar status 2 bo‘lsa, hech narsa ko‘rsatmaymiz
                 managementField.val("");
             } else {
-                managementField.find("option").each(function() {
-                    var optionType = $(this).attr("data-type"); // `data-type` ni olamiz
+                $.ajax({
+                    url: '/check-option-type/',  // Django URL manzili
+                    type: 'POST',
+                    data: {
+                        'status_value': statusValue,
+                        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+                    },
+                    success: function(response) {
+                        if (response.valid) {
 
-                    if (
-                        (statusValue === "1" && optionType === "1") || 
-                        (statusValue === "3" && optionType === "3")
-                    ) {
-                        $(this).show();
+                            managementField.empty();
+                            response.data.forEach(function(item) {
+                                var option = $("<option></option>").val(item.id).text(item.name);
+                                managementField.append(option);
+                            });
+
+                            var firstVisible = managementField.find("option:visible:first").val();
+                            managementField.val(firstVisible);
+                        }
                     }
                 });
-
-                // Yashirin bo‘lmagan birinchi elementni tanlash
-                var firstVisible = managementField.find("option:visible:first").val();
-                managementField.val(firstVisible);
             }
         }
 
         $("#id_status").change(filterManagement);
-        filterManagement();
+        filterManagement(); 
     });
 })(django.jQuery);
