@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Contact, Management, Permission, Role
+from .models import Contact, Management, Permission
 
 class ContactAdmin(admin.ModelAdmin):
     class Media:
@@ -11,4 +11,3 @@ class ContactAdmin(admin.ModelAdmin):
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(Management)
 admin.site.register(Permission)
-admin.site.register(Role)

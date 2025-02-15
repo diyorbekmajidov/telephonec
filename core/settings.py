@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'contacts', #my app
     'rest_framework',
-    'ckeditor', # this for django-ckeditor
 ]
 
 MIDDLEWARE = [

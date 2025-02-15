@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 import json 
 
 phone_regex = RegexValidator(
@@ -13,20 +14,25 @@ def get_district():
         data = json.load(file)
     return [(str(i['id']) ,i["name"]) for i in data]
 
-class Role(models.Model):
-    name = models.CharField(max_length=50, unique=True) #city staff or district staff
-
-    def __str__(self):
-        return self.name
-
 class Permission(models.Model):
-    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    district = models.CharField(max_length=200, choices=get_district(), null=True, blank=True)
+
     can_add_user = models.BooleanField(default=False)
-    can_view_own_district = models.BooleanField(default=True)
-    can_view_all = models.BooleanField(default=False)
+    can_edit_user = models.BooleanField(default=False)
+    can_delete_user = models.BooleanField(default=False)
+    can_view_all = models.BooleanField(default=False)  # for city admin
+
+    def get_district_name(self): #this function get district name
+        district_dict = dict(get_district())
+        return district_dict.get(self.district, 'Tuman topilmadi')
+
+    def is_city_admin(self):
+        return self.district is None  # Tuman belgilangan bo'lmasa → Shahar admin
 
     def __str__(self):
-        return f"Permissions for {self.role.name}"
+        return f"{self.user.username} ({self.get_district_name() if self.district else 'City Admin'})"
+
 
 class Management(models.Model): 
     STATUS_METHODS = [
@@ -59,7 +65,6 @@ class Contact(models.Model):
     home_number = models.CharField(max_length=56, blank=True, null=True)
 
     district = models.CharField(max_length=200, choices=get_district())
-    role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)

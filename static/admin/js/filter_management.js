@@ -13,7 +13,7 @@
                 managementField.val("");
             } else {
                 $.ajax({
-                    url: '/your-view-url/',  // Django URL manzili
+                    url: '/check-option-type/',  // Django URL manzili
                     type: 'POST',
                     data: {
                         'status_value': statusValue,
