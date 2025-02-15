@@ -26,7 +26,6 @@ def check_option_text(request):
         
         serializer = ManagementSerializers(data, many=True)
 
-        # JSON formatida qaytarish
         return JsonResponse({'valid': True, 'data': serializer.data})
 
     return JsonResponse({'valid': False})

@@ -1,7 +1,5 @@
 (function($) {
     $(document).ready(function() {
-        console.log("JS ishladi!");
-
         function filterManagement() {
             var statusField = $("#id_status");
             var managementField = $("#id_management");
@@ -9,8 +7,6 @@
             if (!statusField.length || !managementField.length) return;
 
             var statusValue = statusField.val();
-            console.log("Status tanlandi:", statusValue);
-
             managementField.find("option").hide();
 
             if (statusValue === "2") {
