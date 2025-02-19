@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from .models import (Contact, Permission, Management)
 from django.http import JsonResponse, HttpResponse
@@ -6,11 +6,38 @@ from .serializers import *
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import ManagementSerializers
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
 
-# Create your views here.
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password) 
+        
+        if user is not None:
+            login(request, user)  
+            return redirect('home')  # Redirect to another view (update with your URL name)
+        else:
+            messages.error(request, "Invalid username or password.")  # Show error message
 
+    return render(request, 'login.html') 
+
+@login_required
 def home(request):
-    return render(request, 'index.html')
+    if request.user.is_authenticated:
+        user = Permission.objects.get(user=request.user)
+
+        # Agar foydalanuvchi "Samarqand viloyati" bo'lsa, barcha kontaktlarni olamiz
+        if user.can_view_all:
+            contacts = Contact.objects.all()
+        else:
+            contacts = Contact.objects.filter(district=user.district)
+
+        serialized_contacts = ContactSerializers(contacts, many=True)
+
+    return render(request, 'index.html', {'contacts': serialized_contacts.data})
+
 
 
 @csrf_exempt
@@ -26,22 +53,3 @@ def check_option_text(request):
 
     return JsonResponse({'valid': False})
 
-
-
-
-# @login_required
-# def contact_list(request):
-#     permission = Permission.objects.get(user=request.user)
-    
-#     if request.user.is_superuser or permission.can_view_all:
-#         contacts = Contact.objects.all()  # City admin sees all users
-#     else:
-#         contacts = Contact.objects.filter(district=permission.role.district)  # District admin sees only their users
-
-#     return render(request, "contacts.html", {"contacts": contacts})
-
-
-def contact_list(reuest):
-    data = Contact.objects.all()
-    serializers = ContactSerializers(data, many=True)
-    return JsonResponse({"ok":serializers.data})

@@ -55,6 +55,7 @@ class Contact(models.Model):
         ("2", 'Aparat hodim'),
         ("3", 'Boshqarma')
     ]
+    
     status = models.CharField(max_length=20, choices=STATUS_METHODS, default="3")
     management = models.ForeignKey(
         Management, on_delete=models.SET_NULL, null=True, blank=True, related_name="employees"
@@ -72,6 +73,14 @@ class Contact(models.Model):
     def clean(self):
         if self.status == "3" and not self.management:
             raise ValidationError({"management": "Boshqarma xodimi uchun boshqarma tanlanishi shart!"})
+        if self.status == "1" and not self.management:
+            raise ValidationError({"management": "Sektor Rahbar xodimi uchun sektor tanlanishi shart!"})
         
     def __str__(self):
         return f"{self.full_name} - {self.position} ({self.status})"
+    
+
+    def save(self, *args, **kwargs):
+        status_dict = dict(self.STATUS_METHODS)
+        self.status = status_dict.get(self.status, self.status)  #Saves as text
+        super().save(*args, **kwargs)
