@@ -61,6 +61,7 @@ class Contact(models.Model):
         Management, on_delete=models.SET_NULL, null=True, blank=True, related_name="employees"
     )
 
+    birthday = models.DateField()
     service_number = models.CharField(max_length=56, blank=True, null=True)
     position = models.CharField(max_length=56, blank=False, null=False)
     home_number = models.CharField(max_length=56, blank=True, null=True)

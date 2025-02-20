@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-
-from .models import (Contact, Permission, Management)
+import json
+from .models import (Contact, Permission, Management,get_district)
 from django.http import JsonResponse, HttpResponse
 from .serializers import *
 from django.views.decorators.csrf import csrf_exempt
@@ -26,9 +26,20 @@ def login_view(request):
 @login_required
 def home(request):
     if request.user.is_authenticated:
-        user = Permission.objects.get(user=request.user)
+        district_dict = dict(get_district())
+        districts = json.loads(json.dumps(district_dict))  
 
-        # Agar foydalanuvchi "Samarqand viloyati" bo'lsa, barcha kontaktlarni olamiz
+        user = Permission.objects.get(user=request.user)
+        query = request.GET.get("q", "").strip()
+        status = request.GET.get("status", "").strip() 
+
+        if status in ["1", "3"]:
+            
+            managements = Management.objects.filter(type=status)
+            print(managements, status)
+        else:
+            managements = Management.objects.none()
+
         if user.can_view_all:
             contacts = Contact.objects.all()
         else:
@@ -36,9 +47,22 @@ def home(request):
 
         serialized_contacts = ContactSerializers(contacts, many=True)
 
-    return render(request, 'index.html', {'contacts': serialized_contacts.data})
+        return render(request, 'index.html', {
+            'contacts': serialized_contacts.data,
+            'query': query,
+            'districts': districts,
+            'managements': managements  
+        })
 
 
+def get_managements(request):
+    status = request.GET.get("status", "").strip()
+
+    if status in ["1", "3"]:
+        managements = Management.objects.filter(type=status).values("id", "name")
+        return JsonResponse({"valid": True, "data": list(managements)})
+    
+    return JsonResponse({"valid": False, "data": []})
 
 @csrf_exempt
 def check_option_text(request):
