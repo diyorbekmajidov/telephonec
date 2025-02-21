@@ -9,6 +9,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 
+
+def home1(request):
+    return render(request,"index.html", {"form":'ok'})
+
+def home2(request):
+    return render(request, 'base.html')
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get('username')
@@ -47,7 +54,7 @@ def home(request):
 
         serialized_contacts = ContactSerializers(contacts, many=True)
 
-        return render(request, 'index.html', {
+        return render(request, 'indexs.html', {
             'contacts': serialized_contacts.data,
             'query': query,
             'districts': districts,
