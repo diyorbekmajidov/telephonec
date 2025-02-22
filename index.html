@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Hodimlar Ro'yxati{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Hodimlar Ro'yxati</h2>
+    
+    <form method="GET" action="{% url 'home' %}" class="mb-3 row">
+        <div class="col-md-3">
+            <input type="text" name="full_name" value="{{ query.full_name }}" placeholder="Ism bo‘yicha qidirish" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="position" value="{{ query.position }}" placeholder="Lavozim bo‘yicha qidirish" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <select name="district" class="form-control">
+                <option value="">Tuman tanlang</option>
+                {% for key, value in districts.items %}
+                <option value="{{ key }}" {% if query.district == key %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="status" id="status" class="form-control">
+                <option value="1" {% if query.status == "1" %}selected{% endif %}>Sektor Rahbar</option>
+                <option value="2" {% if query.status == "2" %}selected{% endif %}>Aparat hodim</option>
+                <option value="3" {% if query.status == "3" %}selected{% endif %}>Boshqarma</option>
+            </select>
+        </div>
+        <div class="col-md-3 mt-2" id="management_div" style="display: none;">
+            <select name="management" id="management" class="form-control">
+                {% for mg in managements %}
+                <option value="{{ mg.id }}" {% if query.management == mg.id|stringformat:"s" %}selected{% endif %}>{{ mg.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 mt-2">
+            <button type="submit" class="btn btn-primary">Qidirish</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Tozalash</a>
+        </div>
+    </form>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function filterManagement() {
+                var statusField = $("#status");
+                var managementDiv = $("#management_div");
+                var managementField = $("#management");
+
+                if (!statusField.length || !managementField.length) return;
+
+                var statusValue = statusField.val();
+
+                if (statusValue === "2") {
+                    managementDiv.hide();
+                    managementField.val("");  // 'Aparat hodim' tanlanganda management ni bo‘sh qilamiz
+                } else {
+                    managementDiv.show();  // 'Sektor Rahbar' va 'Boshqarma' uchun ko‘rsatamiz
+                    
+                    $.ajax({
+                        url: '/get-managements/',  // Backend API endpoint
+                        type: 'GET',
+                        data: { 'status': statusValue },
+                        success: function(response) {
+                            if (response.valid) {
+                                managementField.empty();
+                                response.data.forEach(function(item) {
+                                    var option = $("<option></option>").val(item.id).text(item.name);
+                                    managementField.append(option);
+                                });
+
+                                // Oldingi tanlangan qiymatni saqlash
+                                if ("{{ query.management }}" !== "") {
+                                    managementField.val("{{ query.management }}");
+                                } else {
+                                    managementField.val(managementField.find("option:first").val());
+                                }
+                            }
+                        },
+                        error: function() {
+                            console.error("Server bilan aloqa bo‘lmadi.");
+                        }
+                    });
+                }
+            }
+
+            $("#status").change(filterManagement);
+            filterManagement();  // Sahifa yuklanishda ham tekshiramiz
+        });
+    </script>
+    
+    <table class="table table-striped table-hover ">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>F.I.Sh.</th>
+                <th>Telefon</th>
+                <th>Shaxsiy raqam</th>
+                <th>Lavozim</th>
+                <th>Status</th>
+                <th>Boshqarma</th>
+                <th>Uy telfon raqam</th>
+                <th>Tuman</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contact in contacts %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ contact.full_name }}</td>
+                <td>{{ contact.phone_number }}</td>
+                <td>{{ contact.own_number }}</td>
+                <td>{{ contact.position }}</td>
+                <td>{{ contact.status}}</td>
+                <td>{{ contact.management}}</td>
+                <td>{{ contact.home_number }}</td>
+                <td>{{ contact.district_display}}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center text-muted">Hodimlar topilmadi</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

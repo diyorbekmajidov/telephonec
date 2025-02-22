@@ -10,11 +10,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 
 
-def home1(request):
-    return render(request,"index.html", {"form":'ok'})
+# def home1(request):
+#     return render(request,"index.html", {"form":'ok'})
 
 def home2(request):
-    return render(request, 'base.html')
+    return render(request, 'tables.html')
 
 def login_view(request):
     if request.method == "POST":
@@ -54,7 +54,7 @@ def home(request):
 
         serialized_contacts = ContactSerializers(contacts, many=True)
 
-        return render(request, 'indexs.html', {
+        return render(request, 'index.html', {
             'contacts': serialized_contacts.data,
             'query': query,
             'districts': districts,
