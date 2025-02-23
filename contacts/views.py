@@ -72,6 +72,7 @@ def get_managements(request):
 @csrf_exempt
 def check_option_text(request):
     if request.method == "POST":
+        print(request.POST)
         status_value = request.POST.get('status_value')
         
         data = Management.objects.filter(type=status_value)

@@ -34,29 +34,35 @@ class Permission(models.Model):
         return f"{self.user.username} ({self.get_district_name() if self.district else 'City Admin'})"
 
 
+
 class Management(models.Model): 
-    STATUS_METHODS = [
-        ("1", 'Sektor Rahbar'),
-        ("3", 'Boshqarma')
-    ]
+    class ManagementType(models.TextChoices):
+        SEKTOR_RAHBAR = "Sektor Rahbar", "Sektor Rahbar"
+        BOSHQARMA = "Boshqarma", "Boshqarma"
+
     name = models.CharField(max_length=100, unique=True)
-    type = models.CharField(choices=STATUS_METHODS, max_length=50)
+    type = models.CharField(
+        max_length=50,
+        choices=ManagementType.choices, 
+        default=ManagementType.BOSHQARMA 
+    )
 
     def __str__(self):
         return self.name
 
 class Contact(models.Model):
+    class StatusChoices(models.TextChoices):
+        SEKTOR_RAHBAR = "Sektor Rahbar", "Sektor Rahbar"
+        APARAT_HODIM = "Aparat hodim", "Aparat hodim"
+        BOSHQARMA = "Boshqarma", "Boshqarma"
+
     full_name = models.CharField(max_length=56, blank=False, null=False)
     phone_number = models.CharField(max_length=13, validators=[phone_regex], unique=True)
     own_number = models.CharField(max_length=13, validators=[phone_regex], unique=True)
-
-    STATUS_METHODS = [
-        ("1", 'Sektor Rahbar'),
-        ("2", 'Aparat hodim'),
-        ("3", 'Boshqarma')
-    ]
-    
-    status = models.CharField(max_length=20, choices=STATUS_METHODS, default="3")
+    status = models.CharField(
+        max_length=20, choices=StatusChoices.choices,  # Enum'dan foydalanamiz
+        default=StatusChoices.BOSHQARMA  # Default qiymat
+    )
     management = models.ForeignKey(
         Management, on_delete=models.SET_NULL, null=True, blank=True, related_name="employees"
     )
@@ -78,10 +84,5 @@ class Contact(models.Model):
             raise ValidationError({"management": "Sektor Rahbar xodimi uchun sektor tanlanishi shart!"})
         
     def __str__(self):
-        return f"{self.full_name} - {self.position} ({self.status})"
+        return f"{self.full_name} - {self.position} ({self.status})-{self.management}"
     
-
-    def save(self, *args, **kwargs):
-        status_dict = dict(self.STATUS_METHODS)
-        self.status = status_dict.get(self.status, self.status)  #Saves as text
-        super().save(*args, **kwargs)

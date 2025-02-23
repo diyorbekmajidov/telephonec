@@ -2,18 +2,20 @@
     $(document).ready(function() {
         function filterManagement() {
             var statusField = $("#id_status");
-            var managementField = $("#id_management");
+            var managementField = $("#id_management").closest('.form-row');
 
             if (!statusField.length || !managementField.length) return;
 
             var statusValue = statusField.val();
-            managementField.find("option").hide();
 
-            if (statusValue === "2") {
-                managementField.val("");
+            if (statusValue === "Aparat hodim") {
+                managementField.hide();  // 🔴 Yashirish
+                $("#id_management").val("");  // 🔴 Maydonni bo‘sh qilish
             } else {
+                managementField.show();  // 🟢 Ko‘rsatish
+                
                 $.ajax({
-                    url: '/check-option-type/',  // Django URL manzili
+                    url: '/check-option-type/',
                     type: 'POST',
                     data: {
                         'status_value': statusValue,
@@ -21,15 +23,16 @@
                     },
                     success: function(response) {
                         if (response.valid) {
-
-                            managementField.empty();
+                            var managementSelect = $("#id_management");
+                            managementSelect.empty();
+                            
                             response.data.forEach(function(item) {
                                 var option = $("<option></option>").val(item.id).text(item.name);
-                                managementField.append(option);
+                                managementSelect.append(option);
                             });
 
-                            var firstVisible = managementField.find("option:visible:first").val();
-                            managementField.val(firstVisible);
+                            var firstVisible = managementSelect.find("option:visible:first").val();
+                            managementSelect.val(firstVisible);
                         }
                     }
                 });
@@ -37,6 +40,6 @@
         }
 
         $("#id_status").change(filterManagement);
-        filterManagement(); 
+        filterManagement();
     });
 })(django.jQuery);

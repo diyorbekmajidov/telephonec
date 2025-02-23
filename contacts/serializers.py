@@ -11,7 +11,7 @@ class ContactSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Contact
-        fields = ['id', 'full_name', 'phone_number', 'own_number', 'status', 
+        fields = ['id', 'full_name', 'phone_number', 'own_number', 'status', 'management',
                   'service_number', 'position', 'home_number', 'district', 'district_display']
 
     def get_district_display(self, obj):
